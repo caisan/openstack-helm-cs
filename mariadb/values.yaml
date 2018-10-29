@@ -166,9 +166,8 @@ force_bootstrap: false
 volume:
   chown_on_start: true
   enabled: true
-  class_name: general
-  size: 5Gi
-
+  class_name: dynamic-ceph-rdb
+  size: 10Gi
 
 
 conf:
