@@ -21,6 +21,12 @@ make cinder
 #NOTE: Deploy command
 : ${OSH_EXTRA_HELM_ARGS:=""}
 tee /tmp/cinder.yaml <<EOF
+pod:
+  replicas:
+    api: 1
+    volume: 1
+    scheduler: 1
+    backup: 1
 conf:
   ceph:
     pools:
