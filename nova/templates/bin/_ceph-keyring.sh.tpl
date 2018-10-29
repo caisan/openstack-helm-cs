@@ -19,6 +19,8 @@ limitations under the License.
 set -ex
 export HOME=/tmp
 
+ls -al /etc/ceph
+
 KEYRING=/etc/ceph/ceph.client.${CEPH_CINDER_USER}.keyring
 {{- if .Values.conf.ceph.cinder.keyring }}
 cat > ${KEYRING} <<EOF
@@ -31,9 +33,7 @@ if ! [ "x${CEPH_CINDER_USER}" == "xadmin"]; then
   ceph auth get-or-create client.${CEPH_CINDER_USER} \
     mon "allow *" \
     osd "allow *" \
-    mgr "allow *" \
     -o ${KEYRING}
 
-  rm -f /etc/ceph/ceph.client.admin.keyring
 fi
 {{- end }}

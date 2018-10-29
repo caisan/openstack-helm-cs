@@ -295,11 +295,6 @@ dependencies:
         - endpoint: internal
           service: compute
     compute:
-      pod:
-        - requireSameNode: true
-          labels:
-            application: libvirt
-            component: libvirt
       jobs:
         - nova-db-sync
         - nova-rabbit-init
