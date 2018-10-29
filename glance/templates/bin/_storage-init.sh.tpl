@@ -39,11 +39,16 @@ elif [ "x$STORAGE_BACKEND" == "xswift" ]; then
     -H "X-Auth-Token: ${OS_TOKEN}" \
     -H "X-Account-Meta-Temp-URL-Key: ${SWIFT_TMPURL_KEY}"
 elif [ "x$STORAGE_BACKEND" == "xrbd" ]; then
+  echo "ls /etc/ceph"
+  ls -l /etc/ceph
+  cat /etc/ceph/ceph.client.admin.keyring
+  cat /etc/ceph/ceph.mon.keyring
+  cat /etc/ceph/ceph.conf
   ceph -s
   function ensure_pool () {
     ceph osd pool stats "$1" || ceph osd pool create "$1" "$2"
     local test_luminous
-    test_luminous=$(ceph tell osd.* version | egrep -c "12.2|luminous" | xargs echo)
+    test_luminous=$(ceph tell osd.* version | egrep -c "12.2|jewel" | xargs echo)
     if [[ ${test_luminous} -gt 0 ]]; then
       ceph osd pool application enable "$1" "$3"
     fi
@@ -58,7 +63,6 @@ elif [ "x$STORAGE_BACKEND" == "xrbd" ]; then
     ceph auth get-or-create "client.${RBD_POOL_USER}" \
       mon "allow *" \
       osd "allow *" \
-      mgr "allow *" \
       -o "${KEYRING}"
   fi
 
