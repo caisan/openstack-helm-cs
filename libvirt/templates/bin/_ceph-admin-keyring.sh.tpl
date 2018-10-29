@@ -19,13 +19,4 @@ limitations under the License.
 set -ex
 export HOME=/tmp
 
-cat > /etc/ceph/ceph.client.admin.keyring << EOF
-[client.admin]
-{{- if .Values.conf.ceph.admin_keyring }}
-    key = {{ .Values.conf.ceph.admin_keyring }}
-{{- else }}
-    key = $(cat /tmp/client-keyring)
-{{- end }}
-EOF
-
 exit 0

@@ -31,7 +31,6 @@ if ! [ "x${CEPH_CINDER_USER}" == "xadmin"]; then
   ceph auth get-or-create client.${CEPH_CINDER_USER} \
     mon "allow *" \
     osd "allow *" \
-    mgr "allow *" \
     -o ${KEYRING}
 
   rm -f /etc/ceph/ceph.client.admin.keyring
