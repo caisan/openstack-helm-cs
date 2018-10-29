@@ -61,4 +61,8 @@ fi
 tee > /tmp/pod-shared/ml2-local-ip.ini << EOF
 [ovs]
 local_ip = "${LOCAL_IP}"
+enable_tunneling = True
+vxlan_udp_port=4789
+tunnel_bridge = br-tun
+integration_bridge = br-int
 EOF
