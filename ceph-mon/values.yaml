@@ -111,8 +111,8 @@ secrets:
     admin: ceph-client-admin-keyring
 
 network:
-  public: 192.168.0.0/16
-  cluster: 192.168.0.0/16
+  public: 192.168.250.0/24
+  cluster: 192.168.250.0/24
 
 conf:
   templates:

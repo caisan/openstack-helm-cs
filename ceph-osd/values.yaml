@@ -77,8 +77,8 @@ secrets:
     osd: ceph-bootstrap-osd-keyring
 
 network:
-  public: 192.168.0.0/16
-  cluster: 192.168.0.0/16
+  public: 192.168.132.0/24
+  cluster: 192.168.133.0/24
   port:
     mon: 6789
     rgw: 8088
@@ -102,24 +102,24 @@ conf:
     # NOTE(portdirect): for homogeneous clusters the `osd` key can be used to
     # define OSD pods that will be deployed across the cluster.
     osd:
-      - data:
-          type: directory
-          location: /var/lib/openstack-helm/ceph/osd/osd-one
-        journal:
-          type: directory
-          location: /var/lib/openstack-helm/ceph/osd/journal-one
+      #- data:
+      #    type: directory
+      #    location: /var/lib/openstack-helm/ceph/osd/osd-one
+      #  journal:
+      #    type: directory
+      #    location: /var/lib/openstack-helm/ceph/osd/journal-one
       # - data:
       #     type: block-logical
       #     location: /dev/sde
       #   journal:
       #     type: block-logical
       #     location: /dev/sdf
-      # - data:
-      #     type: block-logical
-      #     location: /dev/sdg
-      #   journal:
-      #     type: directory
-      #     location: /var/lib/openstack-helm/ceph/osd/journal-sdg
+      - data:
+           type: block-logical
+           location: /dev/vdb
+        journal:
+           type: directory
+           location: /var/lib/openstack-helm/ceph/osd/journal-sdg
 # NOTE(portdirect): for heterogeneous clusters the overrides section can be used to define
 # OSD pods that will be deployed upon specifc nodes.
 # overrides:

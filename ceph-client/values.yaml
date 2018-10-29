@@ -164,8 +164,8 @@ network:
     node_port:
       enabled: false
       port: 30004
-  public: 192.168.0.0/16
-  cluster: 192.168.0.0/16
+  public: 192.168.250.0/24
+  cluster: 192.168.250.0/24
 
 conf:
   features:
@@ -185,7 +185,7 @@ conf:
       #NOTE(portdirect): arbitrarily we set the default number of expected OSD's to 5
       # to match the number of nodes in the OSH gate.
       osd: 5
-      pg_per_osd: 100
+      pg_per_osd: 16
     default:
       #NOTE(portdirect): this should be 'same_host' for a single node
       # cluster to be in a healthy state
@@ -197,77 +197,77 @@ conf:
       # RBD pool
       - name: rbd
         application: rbd
-        replication: 3
+        replication: 1
         percent_total_data: 40
       # CephFS pools
       - name: cephfs_metadata
         application: cephfs
-        replication: 3
+        replication: 1
         percent_total_data: 5
       - name: cephfs_data
         application: cephfs
-        replication: 3
+        replication: 1
         percent_total_data: 10
       # RadosGW pools
       - name: .rgw.root
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.control
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.data.root
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.gc
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.log
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.intent-log
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.meta
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.usage
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.users.keys
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.users.email
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.users.swift
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.users.uid
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.buckets.extra
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 0.1
       - name: default.rgw.buckets.index
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 3
       - name: default.rgw.buckets.data
         application: rgw
-        replication: 3
+        replication: 1
         percent_total_data: 34.8
   rgw_ks:
     enabled: false

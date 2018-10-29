@@ -25,7 +25,8 @@ else
 fi
 MON_DATA_DIR="/var/lib/ceph/mon/${CLUSTER}-${MON_NAME}"
 MONMAP="/etc/ceph/monmap-${CLUSTER}"
-
+#MON_IP="$(cat /tmp/cephmon-ip-host | grep $NODE_NAME | awk '{print $1}')"
+echo $NODE_NAME $MON_IP
 # Make the monitor directory
 su -s /bin/sh -c "mkdir -p \"${MON_DATA_DIR}\"" ceph
 
@@ -65,7 +66,6 @@ function get_mon_config {
 }
 
 get_mon_config
-
 # If we don't have a monitor keyring, this is a new monitor
 if [ ! -e "${MON_DATA_DIR}/keyring" ]; then
   if [ ! -e ${MON_KEYRING}.seed ]; then
@@ -95,7 +95,8 @@ else
   ceph-mon --setuser ceph --setgroup ceph --cluster "${CLUSTER}" -i ${MON_NAME} --inject-monmap ${MONMAP} --keyring ${MON_KEYRING} --mon-data "${MON_DATA_DIR}"
   timeout 7 ceph --cluster "${CLUSTER}" mon add "${MON_NAME}" "${MON_IP}:6789" || true
 fi
-
+cat $ADMIN_KEYRING
+cat $MON_KEYRING
 # start MON
 exec /usr/bin/ceph-mon \
   --cluster "${CLUSTER}" \

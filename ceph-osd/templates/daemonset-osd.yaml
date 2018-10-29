@@ -92,6 +92,10 @@ spec:
           #   value: directory
             - name: CLUSTER
               value: "ceph"
+            - name: OSD_FORCE_ZAP
+              value: "1"
+            - name: OSD_DEVICE
+              value: /dev/vdb
             - name: CEPH_GET_ADMIN_KEY
               value: "1"
           command:
@@ -148,6 +152,8 @@ spec:
               value: "ceph"
             - name: CEPH_GET_ADMIN_KEY
               value: "1"
+            - name: OSD_DEVICE
+              value: /dev/vdb
           command:
             - /tmp/osd-start.sh
           lifecycle:

@@ -20,6 +20,7 @@ set -xe
 [ -s /tmp/ceph-fs-uuid.txt ] || uuidgen > /tmp/ceph-fs-uuid.txt
 CEPH_PUBLIC_NETWORK="$(./tools/deployment/multinode/kube-node-subnet.sh)"
 CEPH_CLUSTER_NETWORK="$(./tools/deployment/multinode/kube-node-subnet.sh)"
+
 CEPH_FS_ID="$(cat /tmp/ceph-fs-uuid.txt)"
 #NOTE(portdirect): to use RBD devices with Ubuntu kernels < 4.5 this
 # should be set to 'hammer'
@@ -42,8 +43,8 @@ endpoints:
   ceph_mon:
     namespace: ceph
 network:
-  public: ${CEPH_PUBLIC_NETWORK}
-  cluster: ${CEPH_CLUSTER_NETWORK}
+  public: 192.168.250.0/24
+  cluster: 192.168.250.0/24
 deployment:
   storage_secrets: true
   ceph: true
@@ -56,7 +57,7 @@ bootstrap:
 conf:
   ceph:
     global:
-      fsid: ${CEPH_FS_ID}
+      fsid: 75447375-08d7-495a-bd64-afec8713e083
   rgw_ks:
     enabled: true
   pool:
@@ -64,18 +65,103 @@ conf:
       tunables: ${CRUSH_TUNABLES}
     target:
       # NOTE(portdirect): 5 nodes, with one osd per node
-      osd: 5
+      osd: 3
       pg_per_osd: 100
+    spec:
+      # RBD pool
+      - name: rbd
+        application: rbd
+        replication: 1
+        percent_total_data: 40
+      # CephFS pools
+      - name: cephfs_metadata
+        application: cephfs
+        replication: 1
+        percent_total_data: 5
+      - name: cephfs_data
+        application: cephfs
+        replication: 1
+        percent_total_data: 10
+      # RadosGW pools
+      - name: .rgw.root
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.control
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.data.root
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.gc
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.log
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.intent-log
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.meta
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.usage
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.users.keys
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.users.email
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.users.swift
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.users.uid
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.buckets.extra
+        application: rgw
+        replication: 1
+        percent_total_data: 0.1
+      - name: default.rgw.buckets.index
+        application: rgw
+        replication: 1
+        percent_total_data: 3
+      - name: default.rgw.buckets.data
+        application: rgw
+        replication: 1
+        percent_total_data: 34.8
   storage:
     osd:
       - data:
-          type: directory
-          location: /var/lib/openstack-helm/ceph/osd/osd-one
+          type: block-logical
+          location: /dev/vdb
         journal:
           type: directory
           location: /var/lib/openstack-helm/ceph/osd/journal-one
+pod:
+  replicas:
+    mds: 1
+    mgr: 1
+    rgw: 1
 EOF
 
+helm upgrade --install ceph-mon ./ceph-mon \
+  --namespace=ceph \
+  --values=/tmp/ceph.yaml\
+: '
 for CHART in ceph-mon ceph-osd ceph-client ceph-provisioners; do
   helm upgrade --install ${CHART} ./${CHART} \
     --namespace=ceph \
@@ -84,7 +170,7 @@ for CHART in ceph-mon ceph-osd ceph-client ceph-provisioners; do
     ${OSH_EXTRA_HELM_ARGS_CEPH_DEPLOY}
 
   #NOTE: Wait for deploy
-  ./tools/deployment/common/wait-for-pods.sh ceph 1200
+  ./tools/deployment/common/wait-for-pods.sh ceph 120
 
   #NOTE: Validate deploy
   MON_POD=$(kubectl get pods \
@@ -94,3 +180,4 @@ for CHART in ceph-mon ceph-osd ceph-client ceph-provisioners; do
     --no-headers | awk '{ print $1; exit }')
   kubectl exec -n ceph ${MON_POD} -- ceph -s
 done
+'

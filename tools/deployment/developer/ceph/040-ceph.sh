@@ -43,8 +43,8 @@ endpoints:
   ceph_mon:
     namespace: ceph
 network:
-  public: 172.17.0.1/16
-  cluster: 172.17.0.1/16
+  public: 192.168.250.0/24
+  cluster: 192.168.250.0/24
 deployment:
   storage_secrets: true
   ceph: true
@@ -68,7 +68,7 @@ conf:
       tunables: ${CRUSH_TUNABLES}
     target:
       osd: 1
-      pg_per_osd: 100
+      pg_per_osd: 64
     default:
       crush_rule: same_host
     spec:
@@ -150,8 +150,8 @@ conf:
   storage:
     osd:
       - data:
-          type: directory
-          location: /var/lib/openstack-helm/ceph/osd/osd-one
+          type: block-logical
+          location: /dev/vdb
         journal:
           type: directory
           location: /var/lib/openstack-helm/ceph/osd/journal-one
